@@ -1,4 +1,4 @@
-module group19.project_cs230 {
+module group.project_cs {
     requires javafx.controls;
     requires javafx.fxml;
 
