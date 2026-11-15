@@ -13,7 +13,7 @@ public class MapTester {
 
         // 1. Create a temporary test map file to load from
         String testFileName = "/GRASSLAND.txt";
-        createTestMapFile(testFileName);
+
 
         // 2. Instantiate the MapLoader
         MapLoader loader = new MapLoader();
@@ -53,23 +53,6 @@ public class MapTester {
         System.out.println("\n=== MapLoader Test Complete ===");
     }
 
-    private static void createTestMapFile(String fileName) {
-        // Create a sample map file with a theme header and entities
-        // Make sure to put this file in your project's resource folder if using getResourceAsStream
-        File file = new File("src/main/resources/" + fileName);
-        file.getParentFile().mkdirs();
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write("GRASSLAND\n");
-            writer.write("X X X X X\n");
-            writer.write("X H - C X\n");
-            writer.write("X W J S X\n");
-            writer.write("X X X X X\n");
-            System.out.println("Successfully created temporary test map at: " + file.getPath());
-        } catch (IOException e) {
-            System.err.println("Failed to create test map file: " + e.getMessage());
-        }
-    }
 
     private static void printSpawns(String label, java.util.List<int[]> spawns) {
         System.out.print(label + ": ");
