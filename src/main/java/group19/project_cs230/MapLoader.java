@@ -24,14 +24,14 @@ public class MapLoader {
             shelterSpawn.clear();
             farmerSpawns.clear();
 
-            try (InputStream is = getClass().getResourceAsStream(resourcePath);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
 
-                //error case
-                if (is == null) {
-                    System.err.println("File not found: " + resourcePath);
-                    return;
-                }
+            InputStream is = getClass().getResourceAsStream(resourcePath);
+            if (is == null) {
+                System.err.println("File not found: " + resourcePath);
+                return;
+            }
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
 
                 String firstLine = reader.readLine();
                 if (firstLine != null) {
