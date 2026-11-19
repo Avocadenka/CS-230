@@ -1,26 +1,21 @@
 package group19.project_cs230;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 public class MapTester {
+// DO NOT SUBMIT GEMINI MADE THIS
+    private static final String TEST_MAP_RESOURCE = "/group19/project_cs230/Maps/GRASSLAND.txt";
 
     public static void main(String[] args) {
         System.out.println("=== Starting MapLoader Test ===");
 
-        // 1. Create a temporary test map file to load from
-        String testFileName = "/GRASSLAND.txt";
-
-
-        // 2. Instantiate the MapLoader
+        // 1. Instantiate the MapLoader
         MapLoader loader = new MapLoader();
 
-
+        // 2. Load map from the classpath (e.g., src/main/resources/group19/project_cs230/Maps/GRASSLAND.txt)
         System.out.println("\n--- Loading Map ---");
-        loader.loadMap("/GRASSLAND.txt");
+        loader.loadMap(TEST_MAP_RESOURCE);
 
         // 3. Verify Theme
         System.out.println("\n--- Verifying Theme ---");
@@ -53,10 +48,9 @@ public class MapTester {
         System.out.println("\n=== MapLoader Test Complete ===");
     }
 
-
-    private static void printSpawns(String label, java.util.List<int[]> spawns) {
+    private static void printSpawns(String label, List<int[]> spawns) {
         System.out.print(label + ": ");
-        if (spawns.isEmpty()) {
+        if (spawns == null || spawns.isEmpty()) {
             System.out.println("None found.");
             return;
         }
