@@ -6,7 +6,21 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * Test of the Main Menu for displaying and checking functionality.
+ *
+ * @author Andrii Hainiiev
+ * @version 25
+ */
+
 public class MenuTester extends Application {
+
+    /**
+     * Starts and displays primary stage of the game menu.
+     *
+     * @param primaryStage the primary stage for this application, onto which
+     * the application scene can be set.
+     */
 
     @Override
     public void start(Stage primaryStage) {
@@ -23,6 +37,11 @@ public class MenuTester extends Application {
         }
     }
 
+    /**
+     * Point of starting the test application.
+     *
+     * @param args command line arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }
