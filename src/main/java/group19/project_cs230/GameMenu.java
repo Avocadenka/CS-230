@@ -7,7 +7,7 @@ import javafx.fxml.FXML;
  * Controller which handles user interaction with the main menu
  *
  * @author Andrii Hainiiev
- * @version 25
+ * @version 1.0
  */
 
 public class GameMenu {
@@ -20,7 +20,7 @@ public class GameMenu {
     @FXML
     private void NewGameStart(ActionEvent event) {
         System.out.println("New Game Started!");
-        // here: add game board loading here
+        // here: add game board loading here (Gavin)
 
     }
 
@@ -32,7 +32,7 @@ public class GameMenu {
     @FXML
     private void LoadGame(ActionEvent event) {
         System.out.println("Loading Game...");
-        // here: add a loading procedure here
+        // here: add a loading procedure here (Lillian, Christianna)
     }
 
     /**
@@ -43,7 +43,7 @@ public class GameMenu {
     @FXML
     private void SettingsClick(ActionEvent event) {
         System.out.println("Opening Settings");
-        // here: create settings menu
+        // here: create settings menu (Josh)
     }
 
     /**

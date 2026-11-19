@@ -10,7 +10,7 @@ import javafx.stage.Stage;
  * Test of the Main Menu for displaying and checking functionality.
  *
  * @author Andrii Hainiiev
- * @version 25
+ * @version 1.0
  */
 
 public class MenuTester extends Application {
