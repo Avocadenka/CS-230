@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group19.project_cs230.NewPlayerMenu">
+   <children>
+      <VBox prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <Label prefHeight="15.0" prefWidth="603.0" text="New Player" textAlignment="CENTER" />
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <ChoiceBox fx:id="chooseTitle" prefWidth="150.0" />
+                  <TextField fx:id="userNameInput" prefHeight="25.0" prefWidth="293.0" />
+               </children>
+            </HBox>
+            <Button fx:id="createPlayer" onAction = "#createPlayer" mnemonicParsing="false" text="Create" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
