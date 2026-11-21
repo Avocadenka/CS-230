@@ -12,9 +12,9 @@ public class Test {
      * @param args command line arguments
      */
     public static void main(String[] args){
-        Shelter house = new Shelter();
-        house.levelUp();
-        System.out.println(house.getLevel());
+//        Shelter house = new Shelter();
+//        house.levelUp();
+//        System.out.println(house.getLevel());
 
         PlayerProfile susan = new PlayerProfile("Susan", Title.LADY);
         System.out.println(susan.getFullName());
