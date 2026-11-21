@@ -10,19 +10,19 @@ public class MapLoader {
         private int height;
 
         // where things spawn
-        private final List<int[]> chickenSpawns = new ArrayList<>();
-        private final List<int[]> waterSources = new ArrayList<>();
+        private final List<int[]> chickenSpawn = new ArrayList<>();
+        private final List<int[]> waterSpawn = new ArrayList<>();
         private final List<int[]> seedSpawns = new ArrayList<>();
         private final List<int[]> shelterSpawn = new ArrayList<>();
-        private final List<int[]> farmerSpawns = new ArrayList<>();
+        private final List<int[]> farmerSpawn = new ArrayList<>();
 
         public void loadMap(String resourcePath){
             mapGrid = new ArrayList<>();
-            chickenSpawns.clear();
-            waterSources.clear();
+            chickenSpawn.clear();
+            waterSpawn.clear();
             seedSpawns.clear();
             shelterSpawn.clear();
-            farmerSpawns.clear();
+            farmerSpawn.clear();
 
 
             InputStream is = getClass().getResourceAsStream(resourcePath);
@@ -58,16 +58,16 @@ public class MapLoader {
                         char c = row[x];
                         switch (c) {
                             case 'H':
-                                farmerSpawns.add(new int[]{x, y});
+                                farmerSpawn.add(new int[]{x, y});
                                 break;
                             case 'J':
                                 shelterSpawn.add(new int[]{x, y});
                                 break;
                             case 'C':
-                                chickenSpawns.add(new int[]{x, y});
+                                chickenSpawn.add(new int[]{x, y});
                                 break;
                             case 'W':
-                                waterSources.add(new int[]{x, y});
+                                waterSpawn.add(new int[]{x, y});
                                 break;
                             case 'S':
                                 seedSpawns.add(new int[]{x, y});
@@ -96,9 +96,9 @@ public class MapLoader {
     public List<char[]> getMapGrid() { return mapGrid; }
     public int getWidth() { return width; }
     public int getHeight() { return height; }
-    public List<int[]> getFarmerSpawns() { return farmerSpawns; }
+    public List<int[]> getFarmerSpawn() { return farmerSpawn; }
     public List<int[]> getShelterSpawn() { return shelterSpawn; }
-    public List<int[]> getChickenSpawns() { return chickenSpawns; }
-    public List<int[]> getWaterSources() { return waterSources; }
+    public List<int[]> getChickenSpawn() { return chickenSpawn; }
+    public List<int[]> getWaterSpawn() { return waterSpawn; }
     public List<int[]> getSeedSpawns() { return seedSpawns; }
 }

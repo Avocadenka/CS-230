@@ -14,7 +14,23 @@ public class Shelter extends MainEntity {
     private boolean built;
 
     /** Creates a new Shelter object */
-    public Shelter() {
+    private int x;
+    private int y;
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public Shelter(MapLoader mapLoader) {
+        if (mapLoader != null && mapLoader.getShelterSpawn() != null && !mapLoader.getShelterSpawn().isEmpty()) {
+            int[] spawn = mapLoader.getShelterSpawn().get(0);
+            this.x = spawn[0];
+            this.y = spawn[1];
+        }
     }
 
     /**

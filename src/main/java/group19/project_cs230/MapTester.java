@@ -5,7 +5,7 @@ import java.util.List;
 
 public class MapTester {
 // DO NOT SUBMIT GEMINI MADE THIS
-    private static final String TEST_MAP_RESOURCE = "/group19/project_cs230/Maps/GRASSLAND.txt";
+    private static final String TEST_MAP_RESOURCE = "/group19/project_cs230/Maps/GRASSLAND";
 
     public static void main(String[] args) {
         System.out.println("=== Starting MapLoader Test ===");
@@ -13,7 +13,7 @@ public class MapTester {
         // 1. Instantiate the MapLoader
         MapLoader loader = new MapLoader();
 
-        // 2. Load map from the classpath (e.g., src/main/resources/group19/project_cs230/Maps/GRASSLAND.txt)
+        // 2. Load map from the classpath (e.g., src/main/resources/group19/project_cs230/Maps/GRASSLAND)
         System.out.println("\n--- Loading Map ---");
         loader.loadMap(TEST_MAP_RESOURCE);
 
@@ -39,10 +39,10 @@ public class MapTester {
 
         // 6. Verify Spawn Coordinates
         System.out.println("\n--- Verifying Spawn Lists ---");
-        printSpawns("Farmer Spawns (H)", loader.getFarmerSpawns());
+        printSpawns("Farmer Spawns (H)", loader.getFarmerSpawn());
         printSpawns("Shelter Spawns (J)", loader.getShelterSpawn());
-        printSpawns("Chicken Spawns (C)", loader.getChickenSpawns());
-        printSpawns("Water Sources (W)", loader.getWaterSources());
+        printSpawns("Chicken Spawns (C)", loader.getChickenSpawn());
+        printSpawns("Water Sources (W)", loader.getWaterSpawn());
         printSpawns("Seed Spawns (S)", loader.getSeedSpawns());
 
         System.out.println("\n=== MapLoader Test Complete ===");

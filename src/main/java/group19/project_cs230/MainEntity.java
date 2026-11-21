@@ -11,7 +11,7 @@ package group19.project_cs230;
 public class MainEntity {
 
     /**The current level of the entity. */
-    private int level;
+    public int level;
 
     //  private Tile position;
 
