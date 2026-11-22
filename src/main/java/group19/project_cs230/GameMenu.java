@@ -21,10 +21,7 @@ public class GameMenu {
     private void NewGameStart(ActionEvent event) {
         System.out.println("New Game Started!");
         SceneManager.switchScene("/group19/project_cs230/NewPlayerMenu.fxml");
-        // Gavin - I need to put a way for players to make a new profile first (Lilian)
-        // switch to the NewPlayerMenu Scene first
-        // here: add game board loading here (Gavin)
-
+        // Gavin - Please go to NewPlayerMenu, createPlayer() to find where to switch to the game UI.
     }
 
     /**
@@ -36,6 +33,7 @@ public class GameMenu {
     private void LoadGame(ActionEvent event) {
         System.out.println("Loading Game...");
         // here: add a loading procedure here (Lillian, Christianna)
+        SceneManager.switchScene("/group19/project_cs230/LoadGameScene.fxml");
     }
 
     @FXML

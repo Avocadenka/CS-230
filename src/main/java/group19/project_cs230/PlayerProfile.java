@@ -92,7 +92,7 @@ public class PlayerProfile {
         setAttempts(this.levelsUnlocked, attempts);
         this.levelsUnlocked++;
 
-        if (levelsUnlocked == PLAYER_LEVEL_NEEDED_TO_FINISH) {
+        if (isFinishedGame()) {
             this.highScore = calculateScore();
         }
     }
@@ -132,5 +132,18 @@ public class PlayerProfile {
      */
     private void setAttempts(int level, int attempts) {
         numberOfAttempts.put(level, attempts);
+    }
+
+    public boolean isFinishedGame() {
+        boolean finished = false;
+        if (this.levelsUnlocked == PLAYER_LEVEL_NEEDED_TO_FINISH) {
+            finished = true;
+        }
+        return finished;
+    }
+
+    @Override
+    public String toString() {
+        return getFullName();
     }
 }

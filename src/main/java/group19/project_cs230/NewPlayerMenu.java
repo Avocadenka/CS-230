@@ -14,6 +14,7 @@ public class NewPlayerMenu {
     @FXML
     private TextField userNameInput;
 
+    // drop down menu
     @FXML
     public void initialize() {
         chooseTitle.setItems(
@@ -25,6 +26,10 @@ public class NewPlayerMenu {
     private void createPlayer (ActionEvent event) {
         PlayerProfile newPlayer = new PlayerProfile(userNameInput.getText(), chooseTitle.getValue());
         System.out.println(newPlayer.getFullName());
+        Leaderboard.addPlayer(newPlayer);
+
+        // Gavin - this is where the scene will switch to the main game UI
+        // SceneManager.switchScene("/group19/project_cs230/XXX.fxml");
     }
 
     @FXML
