@@ -38,6 +38,11 @@ public class GameMenu {
         // here: add a loading procedure here (Lillian, Christianna)
     }
 
+    @FXML
+    private void openLeaderboard(ActionEvent event) {
+        SceneManager.switchScene("/group19/project_cs230/LeaderBoardScene.fxml");
+    }
+
     /**
      * Opens game settings .
      *

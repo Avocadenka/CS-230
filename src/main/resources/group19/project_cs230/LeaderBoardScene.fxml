@@ -20,4 +20,7 @@
         </columns>
       </TableView>
    </center>
+   <bottom>
+      <Button fx:id="leaderboardBackButton" onAction="#returnToMainMenu" mnemonicParsing="false" text="Back" BorderPane.alignment="CENTER" />
+   </bottom>
 </BorderPane>

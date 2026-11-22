@@ -26,4 +26,9 @@ public class NewPlayerMenu {
         PlayerProfile newPlayer = new PlayerProfile(userNameInput.getText(), chooseTitle.getValue());
         System.out.println(newPlayer.getFullName());
     }
+
+    @FXML
+    private void returnToMainMenu (ActionEvent event) {
+        SceneManager.switchScene("/group19/project_cs230/GameMenu.fxml");
+    }
 }

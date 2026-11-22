@@ -2,6 +2,7 @@ package group19.project_cs230;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -44,4 +45,8 @@ public class Leaderboard {
             leaderboardTable.setItems(leaderboardData);
         }
 
+    @FXML
+    private void returnToMainMenu (ActionEvent event) {
+        SceneManager.switchScene("/group19/project_cs230/GameMenu.fxml");
+    }
 }
