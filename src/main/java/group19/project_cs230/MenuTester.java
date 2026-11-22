@@ -25,13 +25,10 @@ public class MenuTester extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/group19/project_cs230/GameMenu.fxml"));
-            Parent root = loader.load();
-
             primaryStage.setTitle("CS-230 Game Menu");
-            primaryStage.setScene(new Scene(root, 800, 600));
+            SceneManager.setStage(primaryStage);
+            SceneManager.switchScene("/group19/project_cs230/GameMenu.fxml");
             primaryStage.show();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
