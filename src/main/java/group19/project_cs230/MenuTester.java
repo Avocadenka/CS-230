@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 /**
  * Test of the Main Menu for displaying and checking functionality.
  *
- * @author Andrii Hainiiev
+ * @author Andrii Hainiiev, Lilian Allumn
  * @version 1.0
  */
 
