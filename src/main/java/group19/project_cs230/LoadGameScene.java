@@ -1,6 +1,7 @@
 package group19.project_cs230;
 
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 
@@ -19,4 +20,8 @@ public class LoadGameScene {
       //  selectPlayer.getItems().addAll(players);
     }
 
+    @FXML
+    private void backFromLoadScene (ActionEvent event) {
+        SceneManager.switchScene("/group19/project_cs230/GameMenu.fxml");
+    }
 }
