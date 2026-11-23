@@ -43,7 +43,7 @@ public class MapTester {
         printSpawns("Shelter Spawns (J)", loader.getShelterSpawn());
         printSpawns("Chicken Spawns (C)", loader.getChickenSpawn());
         printSpawns("Water Sources (W)", loader.getWaterSpawn());
-        printSpawns("Seed Spawns (S)", loader.getSeedSpawns());
+        printSpawns("Seed Spawns (S)", loader.getSeedSpawn());
 
         System.out.println("\n=== MapLoader Test Complete ===");
     }

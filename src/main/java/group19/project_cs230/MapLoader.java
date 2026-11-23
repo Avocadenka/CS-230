@@ -12,7 +12,7 @@ public class MapLoader {
         // where things spawn
         private final List<int[]> chickenSpawn = new ArrayList<>();
         private final List<int[]> waterSpawn = new ArrayList<>();
-        private final List<int[]> seedSpawns = new ArrayList<>();
+        private final List<int[]> seedSpawn = new ArrayList<>();
         private final List<int[]> shelterSpawn = new ArrayList<>();
         private final List<int[]> farmerSpawn = new ArrayList<>();
 
@@ -20,7 +20,7 @@ public class MapLoader {
             mapGrid = new ArrayList<>();
             chickenSpawn.clear();
             waterSpawn.clear();
-            seedSpawns.clear();
+            seedSpawn.clear();
             shelterSpawn.clear();
             farmerSpawn.clear();
 
@@ -70,7 +70,7 @@ public class MapLoader {
                                 waterSpawn.add(new int[]{x, y});
                                 break;
                             case 'S':
-                                seedSpawns.add(new int[]{x, y});
+                                seedSpawn.add(new int[]{x, y});
                                 break;
                             case '-':
                             case 'X':
@@ -100,5 +100,5 @@ public class MapLoader {
     public List<int[]> getShelterSpawn() { return shelterSpawn; }
     public List<int[]> getChickenSpawn() { return chickenSpawn; }
     public List<int[]> getWaterSpawn() { return waterSpawn; }
-    public List<int[]> getSeedSpawns() { return seedSpawns; }
+    public List<int[]> getSeedSpawn() { return seedSpawn; }
 }

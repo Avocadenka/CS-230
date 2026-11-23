@@ -66,8 +66,47 @@ public class Farmer extends MainEntity {
         this.y = returnY;
     }
 
-    public void eatFood() {
+    public void eatFood(Seed seed, MapLoader mapLoader) {
+        if (seed == null || seed.getLevel() < 3 || mapLoader == null) {
+            return;
+        }
 
+        List<int[]> seedSpawns = mapLoader.getSeedSpawn();
+        if (seedSpawns == null || seedSpawns.isEmpty()) {
+            return;
+        }
+
+        int[] targetSeed = seedSpawns.get(0);
+        int bestDistance = Math.abs(targetSeed[0] - this.x) + Math.abs(targetSeed[1] - this.y);
+
+        for (int i = 1; i < seedSpawns.size(); i++) {
+            int[] candidate = seedSpawns.get(i);
+            int dist = Math.abs(candidate[0] - this.x) + Math.abs(candidate[1] - this.y);
+            if (dist < bestDistance) {
+                bestDistance = dist;
+                targetSeed = candidate;
+            }
+        }
+
+        // Pull 'H' spawn from MapLoader, falling back to current position if none exists
+        int returnX = this.x;
+        int returnY = this.y;
+        List<int[]> spawns = mapLoader.getFarmerSpawn();
+        if (spawns != null && !spawns.isEmpty()) {
+            returnX = spawns.get(0)[0];
+            returnY = spawns.get(0)[1];
+        }
+
+        // 1. Move to seed source
+        this.x = targetSeed[0];
+        this.y = targetSeed[1];
+
+        // 2. Level up
+        this.level++;
+
+        // 3. Return to spawn
+        this.x = returnX;
+        this.y = returnY;
     }
 
     public void waterSeeds() {
