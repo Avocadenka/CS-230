@@ -22,9 +22,9 @@ public class LoadGameScene {
                 players));
 
     }
-
     @FXML
-    private void backFromLoadScene (ActionEvent event) {
+    private void returnToMainMenu(ActionEvent event) {
         SceneManager.switchScene("/group19/project_cs230/GameMenu.fxml");
     }
+
 }
