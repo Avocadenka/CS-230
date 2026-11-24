@@ -33,7 +33,7 @@ public class GameMenu {
     private void LoadGame(ActionEvent event) {
         System.out.println("Loading Game...");
         // here: add a loading procedure here (Lillian, Christianna)
-        SceneManager.switchScene("/group19/project_cs230/LoadGameScene.fxml");
+        SceneManager.switchToLoadPlayers();
     }
 
     @FXML

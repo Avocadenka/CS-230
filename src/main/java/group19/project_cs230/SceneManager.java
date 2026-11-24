@@ -29,4 +29,20 @@ public class SceneManager {
             e.printStackTrace();
         }
     }
+
+    public static void switchToLoadPlayers(){
+        try {
+            FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource("/group19/project_cs230/LoadGameScene.fxml"));
+            Parent root = loader.load();
+
+            LoadGameScene controller = loader.getController();
+
+            controller.updatePlayerChoiceBox();
+
+            stage.setScene(new Scene(root, STAGE_WIDTH, STAGE_HEIGHT));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
