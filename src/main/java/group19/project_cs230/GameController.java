@@ -47,7 +47,7 @@ public class GameController {
 
     @FXML
     private void handleBackToMenu() {
-        SceneManager.switchScene("/group19/project_cs230/GameMenu.fxml");
+        SceneManager.switchScene("/group19/project_cs230/MenuTester.fxml");
     }
 
     private void drawLevel(GraphicsContext gc) {

@@ -1,15 +1,10 @@
 package group19.project_cs230;
 
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.canvas.*;
+import javafx.scene.control.*;
+import javafx.scene.image.*;
+import javafx.scene.layout.*;
 
 import java.util.List;
 
@@ -45,10 +40,10 @@ public class GameSceneView {
         showFarmer = false;
 
         farmer = new Farmer(mapLoader);
-        chickenEntity = new MainEntity();
-        shelterEntity = new MainEntity();
-        seedsEntity = new MainEntity();
-        waterEntity = new MainEntity();
+        chickenEntity = new Chicken(mapLoader);
+        shelterEntity = new Shelter(mapLoader);
+        seedsEntity = new Seed();
+        waterEntity = new Water(mapLoader);
 
         Button backButton = new Button("Main Menu");
         backButton.setOnAction(event ->
@@ -170,6 +165,7 @@ public class GameSceneView {
                 seedsRow,
                 waterRow
         );
+
         spawnPanel.setStyle("-fx-padding: 12; -fx-background-color: #2A2A2A; -fx-alignment: TOP_LEFT;");
 
         redraw(gc);
@@ -192,42 +188,6 @@ public class GameSceneView {
             Label seedsLabel,
             Label waterLabel
     ) {
-        if (showFarmer && farmer != null) {
-            if (waterEntity.getLevel() >= 1) {
-                if (waterEntity instanceof Water) {
-                    farmer.drinkWater((Water) waterEntity, mapLoader);
-                } else {
-                    farmer.levelUp();
-                }
-            }
-
-            if (seedsEntity.getLevel() >= 3) {
-                if (seedsEntity instanceof Seed) {
-                    farmer.eatFood((Seed) seedsEntity, mapLoader);
-                } else {
-                    farmer.levelUp();
-                }
-            }
-
-            if (chickenEntity.getLevel() >= 1) {
-                if (chickenEntity instanceof Chicken) {
-                    farmer.feedChickens((Chicken) chickenEntity, mapLoader);
-                } else {
-                    farmer.levelUp();
-                    chickenEntity.levelUp();
-                }
-            }
-
-            if (shelterEntity.getLevel() >= 1) {
-                if (shelterEntity instanceof Shelter) {
-                    farmer.expandShelter((Shelter) shelterEntity, mapLoader);
-                } else {
-                    farmer.levelUp();
-                    shelterEntity.levelUp();
-                }
-            }
-        }
-
         refreshAllLevelLabels(farmerLabel, chickenLabel, shelterLabel, seedsLabel, waterLabel);
     }
 
@@ -274,7 +234,7 @@ public class GameSceneView {
 
         LevelTheme theme = mapLoader.getCurrentTheme();
 
-        // 1. Base ground ('-') and walls ('X') across the grid
+        // Base ground ('-') and walls ('X') across the grid
         for (int y = 0; y < mapLoader.getHeight(); y++) {
             char[] row = grid.get(y);
             for (int x = 0; x < row.length; x++) {
@@ -286,7 +246,7 @@ public class GameSceneView {
             }
         }
 
-        // 2. Entities & items at their spawn coordinates (only if spawned via button)
+        // Entities & items at their spawn coordinates (only if spawned via button)
         if (showWater) {
             drawSpawns(gc, spriteCache.getSprite(theme, 'W'), mapLoader.getWaterSpawn(), 5);
         }
