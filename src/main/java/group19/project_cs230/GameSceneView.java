@@ -1,16 +1,25 @@
 package group19.project_cs230;
 
+import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
-import javafx.scene.canvas.*;
-import javafx.scene.control.*;
-import javafx.scene.image.*;
-import javafx.scene.layout.*;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 public class GameSceneView {
 
-    private static final int TILE_SIZE = 48;
+    private static final int TILE_SIZE = 50;
+    private static final int MAX_LEVEL = 5;
+    private static final long STEP_INTERVAL_NANOS = 180_000_000L; // ~5.5 tiles/sec
 
     private final MapLoader mapLoader = new MapLoader();
     private final ThemeSpriteCache spriteCache = new ThemeSpriteCache();
@@ -29,25 +38,24 @@ public class GameSceneView {
     private MainEntity seedsEntity;
     private MainEntity waterEntity;
 
+    private Label farmerLevelLabel;
+    private Label chickenLevelLabel;
+    private Label shelterLevelLabel;
+    private Label seedsLevelLabel;
+    private Label waterLevelLabel;
+
+    private AnimationTimer moveTimer;
+    private long lastStepNanos = 0L;
+
     public Scene createScene(String levelResourcePath) {
         mapLoader.loadMap(levelResourcePath);
-
-        // Reset entity visibility and instances whenever a scene is created
-        showWater = false;
-        showSeeds = false;
-        showShelter = false;
-        showChickens = false;
-        showFarmer = false;
-
-        farmer = new Farmer(mapLoader);
-        chickenEntity = new Chicken(mapLoader);
-        shelterEntity = new Shelter(mapLoader);
-        seedsEntity = new Seed();
-        waterEntity = new Water(mapLoader);
+        resetSceneState();
 
         Button backButton = new Button("Main Menu");
-        backButton.setOnAction(event ->
-                SceneManager.switchScene("/group19/project_cs230/GameMenu.fxml"));
+        backButton.setOnAction(event -> {
+            stopMovementTimer();
+            SceneManager.switchScene("/group19/project_cs230/GameMenu.fxml");
+        });
 
         Label themeLabel = new Label("Theme: " + mapLoader.getCurrentTheme());
         themeLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
@@ -65,109 +73,45 @@ public class GameSceneView {
         Label spawnHeader = new Label("Spawn Entities");
         spawnHeader.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
 
-        Button spawnFarmerBtn = new Button("Spawn Farmer");
-        Label farmerLevelLabel = createLevelLabel(farmer.getLevel());
+        farmerLevelLabel = createLevelLabel(farmer.getLevel());
+        chickenLevelLabel = createLevelLabel(chickenEntity.getLevel());
+        shelterLevelLabel = createLevelLabel(shelterEntity.getLevel());
+        seedsLevelLabel = createLevelLabel(seedsEntity.getLevel());
+        waterLevelLabel = createLevelLabel(waterEntity.getLevel());
 
-        Button spawnChickenBtn = new Button("Spawn Chickens");
-        Label chickenLevelLabel = createLevelLabel(chickenEntity.getLevel());
-
-        Button spawnShelterBtn = new Button("Spawn Shelter");
-        Label shelterLevelLabel = createLevelLabel(shelterEntity.getLevel());
-
-        Button spawnSeedsBtn = new Button("Spawn Seeds");
-        Label seedsLevelLabel = createLevelLabel(seedsEntity.getLevel());
-
-        Button spawnWaterBtn = new Button("Spawn Water");
-        Label waterLevelLabel = createLevelLabel(waterEntity.getLevel());
-
-        spawnFarmerBtn.setOnAction(event -> {
+        Button spawnFarmerBtn = createSpawnButton("Spawn Farmer", farmer, gc, () -> {
             showFarmer = true;
-            farmer.levelUp();
-            spawnFarmerBtn.setDisable(true);
-            triggerAvailableActionsAndRefresh(
-                    farmerLevelLabel,
-                    chickenLevelLabel,
-                    shelterLevelLabel,
-                    seedsLevelLabel,
-                    waterLevelLabel
-            );
-            redraw(gc);
+            onFarmerSpawned();
         });
-
-        spawnChickenBtn.setOnAction(event -> {
+        Button spawnChickenBtn = createSpawnButton("Spawn Chickens", chickenEntity, gc, () -> {
             showChickens = true;
-            chickenEntity.levelUp();
-            spawnChickenBtn.setDisable(true);
-            triggerAvailableActionsAndRefresh(
-                    farmerLevelLabel,
-                    chickenLevelLabel,
-                    shelterLevelLabel,
-                    seedsLevelLabel,
-                    waterLevelLabel
-            );
-            redraw(gc);
+            onChickensSpawned();
         });
-
-        spawnShelterBtn.setOnAction(event -> {
+        Button spawnShelterBtn = createSpawnButton("Spawn Shelter", shelterEntity, gc, () -> {
             showShelter = true;
-            shelterEntity.levelUp();
-            spawnShelterBtn.setDisable(true);
-            triggerAvailableActionsAndRefresh(
-                    farmerLevelLabel,
-                    chickenLevelLabel,
-                    shelterLevelLabel,
-                    seedsLevelLabel,
-                    waterLevelLabel
-            );
-            redraw(gc);
+            onShelterSpawned();
         });
-
-        spawnSeedsBtn.setOnAction(event -> {
+        Button spawnSeedsBtn = createSpawnButton("Spawn Seeds", seedsEntity, gc, () -> {
             showSeeds = true;
-            seedsEntity.levelUp();
-            spawnSeedsBtn.setDisable(true);
-            triggerAvailableActionsAndRefresh(
-                    farmerLevelLabel,
-                    chickenLevelLabel,
-                    shelterLevelLabel,
-                    seedsLevelLabel,
-                    waterLevelLabel
-            );
-            redraw(gc);
+            onSeedsSpawned();
         });
-
-        spawnWaterBtn.setOnAction(event -> {
+        Button spawnWaterBtn = createSpawnButton("Spawn Water", waterEntity, gc, () -> {
             showWater = true;
-            waterEntity.levelUp();
-            spawnWaterBtn.setDisable(true);
-            triggerAvailableActionsAndRefresh(
-                    farmerLevelLabel,
-                    chickenLevelLabel,
-                    shelterLevelLabel,
-                    seedsLevelLabel,
-                    waterLevelLabel
-            );
-            redraw(gc);
+            onWaterSpawned();
         });
-
-        HBox farmerRow = createEntityControlRow(spawnFarmerBtn, farmerLevelLabel);
-        HBox chickenRow = createEntityControlRow(spawnChickenBtn, chickenLevelLabel);
-        HBox shelterRow = createEntityControlRow(spawnShelterBtn, shelterLevelLabel);
-        HBox seedsRow = createEntityControlRow(spawnSeedsBtn, seedsLevelLabel);
-        HBox waterRow = createEntityControlRow(spawnWaterBtn, waterLevelLabel);
 
         VBox spawnPanel = new VBox(
                 10,
                 spawnHeader,
-                farmerRow,
-                chickenRow,
-                shelterRow,
-                seedsRow,
-                waterRow
+                createEntityControlRow(spawnFarmerBtn, farmerLevelLabel),
+                createEntityControlRow(spawnChickenBtn, chickenLevelLabel),
+                createEntityControlRow(spawnShelterBtn, shelterLevelLabel),
+                createEntityControlRow(spawnSeedsBtn, seedsLevelLabel),
+                createEntityControlRow(spawnWaterBtn, waterLevelLabel)
         );
-
         spawnPanel.setStyle("-fx-padding: 12; -fx-background-color: #2A2A2A; -fx-alignment: TOP_LEFT;");
 
+        startMovementTimer(gc);
         redraw(gc);
 
         StackPane centerPane = new StackPane(canvas);
@@ -181,38 +125,170 @@ public class GameSceneView {
         return new Scene(root);
     }
 
-    private void triggerAvailableActionsAndRefresh(
-            Label farmerLabel,
-            Label chickenLabel,
-            Label shelterLabel,
-            Label seedsLabel,
-            Label waterLabel
-    ) {
-        refreshAllLevelLabels(farmerLabel, chickenLabel, shelterLabel, seedsLabel, waterLabel);
+    private void resetSceneState() {
+        stopMovementTimer();
+        lastStepNanos = 0L;
+
+        showWater = false;
+        showSeeds = false;
+        showShelter = false;
+        showChickens = false;
+        showFarmer = false;
+
+        farmer = new Farmer(mapLoader);
+        chickenEntity = new Chicken(mapLoader);
+        shelterEntity = new Shelter(mapLoader);
+        seedsEntity = new Seed();
+        waterEntity = new Water(mapLoader);
     }
 
-    private void refreshAllLevelLabels(
-            Label farmerLabel,
-            Label chickenLabel,
-            Label shelterLabel,
-            Label seedsLabel,
-            Label waterLabel
+    private void startMovementTimer(GraphicsContext gc) {
+        moveTimer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if (now - lastStepNanos < STEP_INTERVAL_NANOS) {
+                    return;
+                }
+                lastStepNanos = now;
+
+                boolean moved = false;
+
+                if (showFarmer && farmer != null && farmer.isMoving()) {
+                    farmer.stepOnce();
+                    moved = true;
+                }
+
+                if (showChickens && chickenEntity instanceof Chicken) {
+                    Chicken chicken = (Chicken) chickenEntity;
+                    if (chicken.isMoving()) {
+                        chicken.stepOnce();
+                        moved = true;
+                    }
+                }
+
+                if (moved) {
+                    refreshAllLevelLabels();
+                    redraw(gc);
+                }
+            }
+        };
+        moveTimer.start();
+    }
+
+    private void stopMovementTimer() {
+        if (moveTimer != null) {
+            moveTimer.stop();
+            moveTimer = null;
+        }
+    }
+
+    private Button createSpawnButton(
+            String text,
+            MainEntity entity,
+            GraphicsContext gc,
+            Runnable onSpawn
     ) {
-        updateLevelLabel(farmerLabel, farmer.getLevel());
-        updateLevelLabel(chickenLabel, chickenEntity.getLevel());
-        updateLevelLabel(shelterLabel, shelterEntity.getLevel());
-        updateLevelLabel(seedsLabel, seedsEntity.getLevel());
-        updateLevelLabel(waterLabel, waterEntity.getLevel());
+        Button button = new Button(text);
+        button.setOnAction(event -> {
+            if (entity.getLevel() < MAX_LEVEL) {
+                entity.levelUp();
+            }
+            onSpawn.run();
+            button.setDisable(true);
+            refreshAllLevelLabels();
+            redraw(gc);
+        });
+        return button;
+    }
+
+    private void onWaterSpawned() {
+        Water water = (waterEntity instanceof Water) ? (Water) waterEntity : null;
+        if (water == null || water.getLevel() < 1) {
+            return;
+        }
+        if (showChickens && chickenEntity instanceof Chicken) {
+            ((Chicken) chickenEntity).drinkWater(water, mapLoader);
+        }
+        if (showFarmer && farmer != null) {
+            farmer.drinkWater(water, mapLoader);
+        }
+    }
+
+    private void onSeedsSpawned() {
+        Seed seed = (seedsEntity instanceof Seed) ? (Seed) seedsEntity : null;
+        if (seed == null) {
+            return;
+        }
+        if (showChickens && chickenEntity instanceof Chicken && seed.getLevel() >= 1) {
+            ((Chicken) chickenEntity).eatSeeds(seed, mapLoader);
+        }
+        if (showFarmer && farmer != null && seed.getLevel() >= 3) {
+            farmer.eatFood(seed, mapLoader);
+        }
+    }
+
+    private void onShelterSpawned() {
+        if (showFarmer && farmer != null && shelterEntity instanceof Shelter && shelterEntity.getLevel() >= 1) {
+            farmer.expandShelter((Shelter) shelterEntity, mapLoader);
+        }
+    }
+
+    private void onChickensSpawned() {
+        if (!(chickenEntity instanceof Chicken)) {
+            return;
+        }
+        Chicken chicken = (Chicken) chickenEntity;
+        Water water = (waterEntity instanceof Water) ? (Water) waterEntity : null;
+        Seed seed = (seedsEntity instanceof Seed) ? (Seed) seedsEntity : null;
+
+        if (water != null && water.getLevel() >= 1) {
+            chicken.drinkWater(water, mapLoader);
+        }
+        if (showSeeds && seed != null && seed.getLevel() >= 1) {
+            chicken.eatSeeds(seed, mapLoader);
+        }
+        if (showFarmer && farmer != null && chicken.getLevel() >= 1) {
+            farmer.feedChickens(chicken, mapLoader);
+        }
+    }
+
+    private void onFarmerSpawned() {
+        if (farmer == null) {
+            return;
+        }
+        Water water = (waterEntity instanceof Water) ? (Water) waterEntity : null;
+        Seed seed = (seedsEntity instanceof Seed) ? (Seed) seedsEntity : null;
+
+        if (showWater && water != null && water.getLevel() >= 1) {
+            farmer.drinkWater(water, mapLoader);
+        }
+        if (showSeeds && seed != null && seed.getLevel() >= 3) {
+            farmer.eatFood(seed, mapLoader);
+        }
+        if (showChickens && chickenEntity instanceof Chicken && chickenEntity.getLevel() >= 1) {
+            farmer.feedChickens((Chicken) chickenEntity, mapLoader);
+        }
+        if (showShelter && shelterEntity instanceof Shelter && shelterEntity.getLevel() >= 1) {
+            farmer.expandShelter((Shelter) shelterEntity, mapLoader);
+        }
+    }
+
+    private void refreshAllLevelLabels() {
+        updateLevelLabel(farmerLevelLabel, Math.min(MAX_LEVEL, farmer.getLevel()));
+        updateLevelLabel(chickenLevelLabel, Math.min(MAX_LEVEL, chickenEntity.getLevel()));
+        updateLevelLabel(shelterLevelLabel, Math.min(MAX_LEVEL, shelterEntity.getLevel()));
+        updateLevelLabel(seedsLevelLabel, Math.min(MAX_LEVEL, seedsEntity.getLevel()));
+        updateLevelLabel(waterLevelLabel, Math.min(MAX_LEVEL, waterEntity.getLevel()));
     }
 
     private Label createLevelLabel(int level) {
-        Label label = new Label("Lv. " + level);
-        label.setStyle("-fx-text-fill: #A5D6A7; -fx-font-weight: bold;");
+        Label label = new Label("Lv. " + Math.min(MAX_LEVEL, level));
+        label.setStyle("-fx-text-fill: #A5D6A6; -fx-font-weight: bold;");
         return label;
     }
 
     private void updateLevelLabel(Label label, int level) {
-        label.setText("Lv. " + level);
+        label.setText("Lv. " + Math.min(MAX_LEVEL, level));
     }
 
     private HBox createEntityControlRow(Button button, Label levelLabel) {
@@ -234,7 +310,7 @@ public class GameSceneView {
 
         LevelTheme theme = mapLoader.getCurrentTheme();
 
-        // Base ground ('-') and walls ('X') across the grid
+        // Base ground ('-') across the grid
         for (int y = 0; y < mapLoader.getHeight(); y++) {
             char[] row = grid.get(y);
             for (int x = 0; x < row.length; x++) {
@@ -246,23 +322,72 @@ public class GameSceneView {
             }
         }
 
-        // Entities & items at their spawn coordinates (only if spawned via button)
-        if (showWater) {
-            drawSpawns(gc, spriteCache.getSprite(theme, 'W'), mapLoader.getWaterSpawn(), 5);
+        // Static / spawn-list entities with level-aware sprites
+        drawIfVisible(
+                gc,
+                theme,
+                () -> showWater,
+                resolveEntitySprite(theme, 'W', waterEntity.getLevel()),
+                mapLoader.getWaterSpawn(),
+                5
+        );
+        drawIfVisible(
+                gc,
+                theme,
+                () -> showSeeds,
+                resolveEntitySprite(theme, 'S', seedsEntity.getLevel()),
+                mapLoader.getSeedSpawn(),
+                5
+        );
+        drawIfVisible(
+                gc,
+                theme,
+                () -> showShelter,
+                resolveEntitySprite(theme, 'J', shelterEntity.getLevel()),
+                mapLoader.getShelterSpawn(),
+                2.5
+        );
+
+        if (showChickens && chickenEntity instanceof Chicken) {
+            Chicken chicken = (Chicken) chickenEntity;
+            Image chickenSprite = resolveEntitySprite(theme, 'C', chicken.getLevel());
+            drawEntitySprite(gc, chickenSprite, chicken.getX(), chicken.getY(), 5);
         }
-        if (showSeeds) {
-            drawSpawns(gc, spriteCache.getSprite(theme, 'S'), mapLoader.getSeedSpawn(), 5);
-        }
-        if (showShelter) {
-            drawSpawns(gc, spriteCache.getSprite(theme, 'J'), mapLoader.getShelterSpawn(), 2.5);
-        }
-        if (showChickens) {
-            drawSpawns(gc, spriteCache.getSprite(theme, 'C'), mapLoader.getChickenSpawn(), 5);
-        }
+
         if (showFarmer && farmer != null) {
-            Image farmerSprite = spriteCache.getSprite(theme, 'H');
+            Image farmerSprite = resolveEntitySprite(theme, 'H', farmer.getLevel());
             drawEntitySprite(gc, farmerSprite, farmer.getX(), farmer.getY(), 5);
         }
+    }
+
+    private Image resolveEntitySprite(LevelTheme theme, char baseKey, int level) {
+        if (baseKey == 'W' && level >= 3) {
+            Image upgradedWater = spriteCache.getSprite(theme, 'W'); // Replace with level-3 water key if distinct
+            if (upgradedWater != null) {
+                return upgradedWater;
+            }
+        }
+        if (baseKey == 'S' && level >= 3) {
+            Image upgradedFlower = spriteCache.getSprite(theme, 'F'); // Replace with level-3 flower key if distinct
+            if (upgradedFlower != null) {
+                return upgradedFlower;
+            }
+        }
+        return spriteCache.getSprite(theme, baseKey);
+    }
+
+    private void drawIfVisible(
+            GraphicsContext gc,
+            LevelTheme theme,
+            BooleanSupplier visible,
+            Image sprite,
+            List<int[]> spawns,
+            double scale
+    ) {
+        if (!visible.getAsBoolean()) {
+            return;
+        }
+        drawSpawns(gc, sprite, spawns, scale);
     }
 
     private void drawSpawns(GraphicsContext gc, Image sprite, List<int[]> spawns, double scale) {

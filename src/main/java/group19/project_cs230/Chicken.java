@@ -1,19 +1,19 @@
 package group19.project_cs230;
 
+import java.util.ArrayDeque;
 import java.util.List;
+import java.util.Queue;
 
-public class Chicken extends MainEntity{
+public class Chicken extends MainEntity {
+
+    private static final int MAX_LEVEL = 5;
 
     private int x;
     private int y;
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
+    private final Queue<int[]> pathQueue = new ArrayDeque<>();
+    private final Queue<Runnable> pendingActions = new ArrayDeque<>();
+    private Runnable onArrivalCallback;
 
     public Chicken(MapLoader mapLoader) {
         if (mapLoader != null && mapLoader.getChickenSpawn() != null && !mapLoader.getChickenSpawn().isEmpty()) {
@@ -23,59 +23,138 @@ public class Chicken extends MainEntity{
         }
     }
 
-    public void layEgg(){
-
+    public int getX() {
+        return x;
     }
 
-    public void eatSeed(){
+    public int getY() {
+        return y;
+    }
 
+    public boolean isMoving() {
+        return !pathQueue.isEmpty();
+    }
+
+    public void layEgg() {
+        // Implement egg laying logic when ready
+    }
+
+    public void eatSeeds(Seed seed, MapLoader mapLoader) {
+        if (seed == null || seed.getLevel() < 1 || mapLoader == null) {
+            return;
+        }
+        enqueueOrRunAction(() -> startEatSeeds(seed, mapLoader));
     }
 
     public void drinkWater(Water water, MapLoader mapLoader) {
         if (water == null || water.getLevel() < 1 || mapLoader == null) {
             return;
         }
+        enqueueOrRunAction(() -> startDrinkWater(water, mapLoader));
+    }
 
+    public void chickenPets() {
+        // Implement chicken pets / offspring logic when ready
+    }
+
+    public void stepOnce() {
+        int[] next = pathQueue.poll();
+        if (next == null) {
+            runNextPendingActionIfIdle();
+            return;
+        }
+        this.x = next[0];
+        this.y = next[1];
+
+        if (pathQueue.isEmpty()) {
+            if (onArrivalCallback != null) {
+                Runnable callback = onArrivalCallback;
+                onArrivalCallback = null;
+                callback.run();
+            }
+            runNextPendingActionIfIdle();
+        }
+    }
+
+    private void startEatSeeds(Seed seed, MapLoader mapLoader) {
+        if (seed == null || seed.getLevel() < 1 || mapLoader == null) {
+            return;
+        }
+        List<int[]> seedSpawns = mapLoader.getSeedSpawn();
+        if (seedSpawns == null || seedSpawns.isEmpty()) {
+            return;
+        }
+
+        int[] target = seedSpawns.get(0);
+        int[] home = getHomeSpawn(mapLoader);
+
+        queueRoundTrip(target[0], target[1], home[0], home[1], () -> {
+            this.level = Math.min(MAX_LEVEL, this.level + 1);
+            seed.level = Math.min(MAX_LEVEL, seed.level + 1);
+        });
+    }
+
+    private void startDrinkWater(Water water, MapLoader mapLoader) {
+        if (water == null || water.getLevel() < 1 || mapLoader == null) {
+            return;
+        }
         List<int[]> waterSpawns = mapLoader.getWaterSpawn();
         if (waterSpawns == null || waterSpawns.isEmpty()) {
             return;
         }
 
-        int[] targetWater = waterSpawns.get(0);
-        int bestDistance = Math.abs(targetWater[0] - this.x) + Math.abs(targetWater[1] - this.y);
+        int[] target = waterSpawns.get(0);
+        int[] home = getHomeSpawn(mapLoader);
 
-        for (int i = 1; i < waterSpawns.size(); i++) {
-            int[] candidate = waterSpawns.get(i);
-            int dist = Math.abs(candidate[0] - this.x) + Math.abs(candidate[1] - this.y);
-            if (dist < bestDistance) {
-                bestDistance = dist;
-                targetWater = candidate;
+        queueRoundTrip(target[0], target[1], home[0], home[1], () -> {
+            this.level = Math.min(MAX_LEVEL, this.level + 1);
+            water.level = Math.min(MAX_LEVEL, water.level + 1);
+        });
+    }
+
+    private void enqueueOrRunAction(Runnable action) {
+        if (isMoving()) {
+            pendingActions.add(action);
+        } else {
+            action.run();
+        }
+    }
+
+    private void runNextPendingActionIfIdle() {
+        while (!isMoving() && !pendingActions.isEmpty()) {
+            Runnable nextAction = pendingActions.poll();
+            if (nextAction != null) {
+                nextAction.run();
             }
         }
+    }
 
-        // Pull 'H' spawn from MapLoader, falling back to current position if none exists
-        int returnX = this.x;
-        int returnY = this.y;
-        List<int[]> spawns = mapLoader.getFarmerSpawn();
+    private int[] getHomeSpawn(MapLoader mapLoader) {
+        List<int[]> spawns = mapLoader.getChickenSpawn();
         if (spawns != null && !spawns.isEmpty()) {
-            returnX = spawns.get(0)[0];
-            returnY = spawns.get(0)[1];
+            return spawns.get(0);
         }
-
-        // 1. Move to water source
-        this.x = targetWater[0];
-        this.y = targetWater[1];
-
-        // 2. Level up
-        this.level++;
-
-        // 3. Return to spawn
-        this.x = returnX;
-        this.y = returnY;
+        return new int[]{this.x, this.y};
     }
 
-    public void chickenPets(){
-
+    private void queueRoundTrip(int targetX, int targetY, int homeX, int homeY, Runnable onArrival) {
+        pathQueue.clear();
+        this.onArrivalCallback = onArrival;
+        enqueueManhattanPath(this.x, this.y, targetX, targetY);
+        enqueueManhattanPath(targetX, targetY, homeX, homeY);
     }
 
+    private void enqueueManhattanPath(int fromX, int fromY, int toX, int toY) {
+        int curX = fromX;
+        int curY = fromY;
+
+        while (curX != toX) {
+            curX += Integer.compare(toX, curX);
+            pathQueue.add(new int[]{curX, curY});
+        }
+        while (curY != toY) {
+            curY += Integer.compare(toY, curY);
+            pathQueue.add(new int[]{curX, curY});
+        }
+    }
 }
