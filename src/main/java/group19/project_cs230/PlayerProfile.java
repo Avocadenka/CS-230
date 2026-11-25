@@ -134,6 +134,15 @@ public class PlayerProfile {
         numberOfAttempts.put(level, attempts);
     }
 
+    /**
+     * Determines whether the player has completed the game.
+     *
+     * A player is considered to have finished the game when
+     * the number of unlocked levels reaches the required value
+     * defined by PLAYER_LEVEL_NEEDED_TO_FINISH.
+     *
+     * @return true if the player has completed the game, otherwise false
+     */
     public boolean isFinishedGame() {
         boolean finished = false;
         if (this.levelsUnlocked == PLAYER_LEVEL_NEEDED_TO_FINISH) {
@@ -142,6 +151,14 @@ public class PlayerProfile {
         return finished;
     }
 
+    /**
+     * Returns the player's full name.
+     *
+     * This method is overridden so that PlayerProfile objects are displayed
+     * using the player's titled name when converted to a String.
+     *
+     * @return the player's full name including title
+     */
     @Override
     public String toString() {
         return getFullName();

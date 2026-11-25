@@ -36,6 +36,11 @@ public class GameMenu {
         SceneManager.switchToLoadPlayers();
     }
 
+    /**
+     * Switches the current scene to the leaderboard screen.
+     *
+     * @param event the button click event that triggered the action
+     */
     @FXML
     private void openLeaderboard(ActionEvent event) {
         SceneManager.switchScene("/group19/project_cs230/LeaderBoardScene.fxml");
