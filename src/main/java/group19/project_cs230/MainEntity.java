@@ -21,8 +21,12 @@ public class MainEntity {
     }
 
     /** Increases the entity's level by one. */
+    public static final int MAX_LEVEL = 5;
+
     public void levelUp() {
-        this.level++;
+        if (this.level < MAX_LEVEL) {
+            this.level++;
+        }
     }
 
     /**

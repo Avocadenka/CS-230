@@ -11,6 +11,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Controller for the leaderboard screen.
+ * Displays completed players and their scores in a table view and provides navigation back to the main menu.
+ *
+ * @author Lilian & Christianna
+ * @version 1.0
+ */
 public class Leaderboard {
 
     @FXML
@@ -24,7 +31,9 @@ public class Leaderboard {
 
     private static ArrayList<PlayerProfile> players = new ArrayList<>();
 
-
+    /**
+     * Initialises the leaderboard table and populates it with all players who have completed the game.
+     */
     @FXML
     public void initialize() {
 
@@ -52,17 +61,31 @@ public class Leaderboard {
 
     }
 
+    /**
+     * Returns the user to the main menu screen.
+     *
+     * @param event the button click event that triggered the scene change
+     */
     @FXML
     private void returnToMainMenu(ActionEvent event) {
         SceneManager.switchScene("/group19/project_cs230/GameMenu.fxml");
     }
 
+    /**
+     * Adds a player profile to the leaderboard.
+     *
+     * @param player the player to add
+     */
     public static void addPlayer(PlayerProfile player) {
         testAddingToLeaderboardWithRandomScores(player);
         players.add(player);
     }
 
-    // for testing purposes - setting each player a random score
+    /**
+     * Assigns random scores to a player for testing purposes before adding them to the leaderboard.
+     *
+     * @param player the player whose score data is updated
+     */
     public static void testAddingToLeaderboardWithRandomScores(PlayerProfile player){
         Random random = new Random();
         for (int i = 0; i < 3; i++) {

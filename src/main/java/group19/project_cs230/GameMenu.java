@@ -33,9 +33,14 @@ public class GameMenu {
     private void LoadGame(ActionEvent event) {
         System.out.println("Loading Game...");
         // here: add a loading procedure here (Lillian, Christianna)
-        SceneManager.switchScene("/group19/project_cs230/LoadGameScene.fxml");
+        SceneManager.switchToLoadPlayers();
     }
 
+    /**
+     * Switches the current scene to the leaderboard screen.
+     *
+     * @param event the button click event that triggered the action
+     */
     @FXML
     private void openLeaderboard(ActionEvent event) {
         SceneManager.switchScene("/group19/project_cs230/LeaderBoardScene.fxml");
