@@ -11,7 +11,6 @@
             <Label prefHeight="17.0" prefWidth="64.0" text="Load Game" />
             <ChoiceBox fx:id="selectPlayer" prefWidth="150.0" />
             <Button fx:id="loadGameButton" mnemonicParsing="false" text="Load" />
-            <Button fx:id="backFromLoadScene" onAction = "#backFromLoadScene" mnemonicParsing="false" text="Back" />
          </children>
          <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
