@@ -1,56 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group19.project_cs230.GameMenu">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="600.0" prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="group19.project_cs230.GameMenu">
    <center>
-      <VBox alignment="CENTER" spacing="40.0" BorderPane.alignment="CENTER">
+      <StackPane prefHeight="600.0" prefWidth="800.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" onAction="#NewGameStart" text="New Game">
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
+            <ImageView fitHeight="600.0" fitWidth="800.0" pickOnBounds="true" preserveRatio="true"
+                       scaleX="1.2" scaleY="1.2">
+               <image>
+                  <Image url="@buttons_background/Back.png" />
+               </image>
+            </ImageView>
+
+            <VBox alignment="CENTER" spacing="18.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#NewGameStart"
+                          style="-fx-background-color: transparent; -fx-padding: 0;">
+                     <graphic>
+                        <ImageView fitHeight="40.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@buttons_background/New game.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+
+                  <Button mnemonicParsing="false" onAction="#LoadGame"
+                          style="-fx-background-color: transparent; -fx-padding: 0;">
+                     <graphic>
+                        <ImageView fitHeight="40.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@buttons_background/Load game.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+
+                  <Button fx:id="leaderboardButton" mnemonicParsing="false" onAction="#openLeaderboard"
+                          style="-fx-background-color: transparent; -fx-padding: 0;">
+                     <graphic>
+                        <ImageView fitHeight="40.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@buttons_background/Leaderboard.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+
+                  <Button mnemonicParsing="false" onAction="#SettingsClick"
+                          style="-fx-background-color: transparent; -fx-padding: 0;">
+                     <graphic>
+                        <ImageView fitHeight="40.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@buttons_background/Settings.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+
+                  <Button mnemonicParsing="false" onAction="#ExitClick"
+                          style="-fx-background-color: transparent; -fx-padding: 0;">
+                     <graphic>
+                        <ImageView fitHeight="40.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@buttons_background/Exit.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+               </children>
                <padding>
-                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                </padding>
-            </Button>
-            <Button mnemonicParsing="false" onAction="#LoadGame" text="Load Game">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-               <padding>
-                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-               </padding>
-            </Button>
-            <Button fx:id="leaderboardButton" onAction="#openLeaderboard" mnemonicParsing="false" prefHeight="37.0" prefWidth="83.0" text="Leaderboard" />
-            <Button mnemonicParsing="false" onAction="#SettingsClick" text="Settings">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-               <padding>
-                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-               </padding>
-            </Button>
-            <Button mnemonicParsing="false" onAction="#ExitClick" text="Exit">
-               <padding>
-                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-               </padding>
-            </Button>
+            </VBox>
          </children>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
-         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-         </padding>
-      </VBox>
+      </StackPane>
    </center>
 </BorderPane>
