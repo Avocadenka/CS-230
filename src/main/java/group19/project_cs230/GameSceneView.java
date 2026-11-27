@@ -68,7 +68,7 @@ public class GameSceneView {
 
         Canvas canvas = new Canvas(widthPx, heightPx);
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setImageSmoothing(false);
+       // gc.setImageSmoothing(false);
 
         Label spawnHeader = new Label("Spawn Entities");
         spawnHeader.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");

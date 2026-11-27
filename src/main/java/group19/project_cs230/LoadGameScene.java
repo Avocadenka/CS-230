@@ -39,7 +39,7 @@ public class LoadGameScene {
      */
     @FXML
     private void returnToMainMenu(ActionEvent event) {
-        SceneManager.switchScene("/group19/project/cs230/GameMenu.fxml");
+        SceneManager.switchScene("/group19/project_cs230/GameMenu.fxml");
     }
 
 }
