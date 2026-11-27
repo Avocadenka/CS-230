@@ -9,6 +9,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.PriorityQueue;
 import java.util.Random;
 
 /**
@@ -49,10 +51,25 @@ public class Leaderboard {
         ObservableList<PlayerProfile> leaderboardData =
                 FXCollections.observableArrayList();
 
-
+        PriorityQueue<PlayerProfile> topFive = new PriorityQueue<>(Comparator.comparingInt(PlayerProfile::getHighScore));
+        int topScoresNum = 5;
+        // find top 5
         for (int i = 0; i < players.size(); i++) {
-            PlayerProfile currentPlayer = players.get(i);
-            if (currentPlayer.isFinishedGame()){
+            if (topFive.size() < topScoresNum) {
+                System.out.println("add " + players.get(i));
+                topFive.offer(players.get(i));
+            }
+            // else if (){ check if the last is equivalent then we can have 6
+            else {
+                topFive.poll();
+                topFive.offer(players.get(i));
+            }
+        }
+
+
+        while (!topFive.isEmpty()) {
+            PlayerProfile currentPlayer = topFive.poll();
+            if (currentPlayer.isFinishedGame()) {
                 leaderboardData.add(currentPlayer);
             }
         }
@@ -86,7 +103,7 @@ public class Leaderboard {
      *
      * @param player the player whose score data is updated
      */
-    public static void testAddingToLeaderboardWithRandomScores(PlayerProfile player){
+    public static void testAddingToLeaderboardWithRandomScores(PlayerProfile player) {
         Random random = new Random();
         for (int i = 0; i < 3; i++) {
             player.moveToNextMap(random.nextInt(120));
