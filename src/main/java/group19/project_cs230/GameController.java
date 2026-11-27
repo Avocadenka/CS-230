@@ -41,7 +41,7 @@ public class GameController {
         gameCanvas.setHeight(mapLoader.getHeight() * TILE_SIZE);
 
         GraphicsContext gc = gameCanvas.getGraphicsContext2D();
-       // gc.setImageSmoothing(false);
+        gc.setImageSmoothing(false);
         drawLevel(gc);
     }
 
