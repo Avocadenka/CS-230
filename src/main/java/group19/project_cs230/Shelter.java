@@ -30,10 +30,4 @@ public class Shelter extends MainEntity {
             this.y = spawn[1];
         }
     }
-
-    /**
-     * Returns whether the shelter has been built.
-     *
-     * @return true if the shelter has been built, otherwise false
-     */
 }

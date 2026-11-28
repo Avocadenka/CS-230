@@ -1,6 +1,7 @@
 package group19.project_cs230;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public enum LevelTheme {
     GRASSLAND(
@@ -20,8 +21,6 @@ public enum LevelTheme {
             "Stone.png"
     );
 
-    private static final int CASTLE_UNLOCK_LEVEL = 2;
-
     private final Map<Character, String> assetMap = new HashMap<>();
 
     LevelTheme(
@@ -40,16 +39,22 @@ public enum LevelTheme {
         assetMap.put('J', shelter);
     }
 
-    public static LevelTheme forLevel(int level) {
-        return level >= CASTLE_UNLOCK_LEVEL ? CASTLE : GRASSLAND;
-    }
-
+    /** Base sprite file name, e.g. "Water.png". */
     public String getAsset(char character) {
         return assetMap.get(character);
     }
 
+    /** Per-level sprite file name, e.g. 'W' + level 2 -> "Water_2.png". */
     public String getAsset(char character, int level) {
-        return forLevel(level).getAsset(character);
+        String base = assetMap.get(character);
+        if (base == null) {
+            return null;
+        }
+        int dot = base.lastIndexOf('.');
+        if (dot < 0) {
+            return base + "_" + level;
+        }
+        return base.substring(0, dot) + "_" + level + base.substring(dot);
     }
 
     public static LevelTheme fromString(String text) {

@@ -4,18 +4,22 @@ import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
 
+/**
+ * The Farmer is the only entity that moves. GameSceneView decides where he goes
+ * (based on the game rules) and what happens when he arrives.
+ */
 public class Farmer extends MainEntity {
-
-    private static final int MAX_LEVEL = 5;
 
     private int x;
     private int y;
 
+    private final MapLoader mapLoader;
     private final Queue<int[]> pathQueue = new ArrayDeque<>();
-    private final Queue<Runnable> pendingActions = new ArrayDeque<>();
-    private Runnable onArrivalCallback;
+    private Runnable onArrival;
+    private boolean carryingWater;
 
     public Farmer(MapLoader mapLoader) {
+        this.mapLoader = mapLoader;
         if (mapLoader != null && mapLoader.getFarmerSpawn() != null && !mapLoader.getFarmerSpawn().isEmpty()) {
             int[] spawn = mapLoader.getFarmerSpawn().get(0);
             this.x = spawn[0];
@@ -35,173 +39,57 @@ public class Farmer extends MainEntity {
         return !pathQueue.isEmpty();
     }
 
-    public void drinkWater(Water water, MapLoader mapLoader) {
-        if (water == null || water.getLevel() < 1 || mapLoader == null) {
+    /** True while walking, or while an arrival action is still pending. */
+    public boolean isBusy() {
+        return isMoving() || onArrival != null;
+    }
+
+    public boolean isCarryingWater() {
+        return carryingWater;
+    }
+
+    public void setCarryingWater(boolean carryingWater) {
+        this.carryingWater = carryingWater;
+    }
+
+    /**
+     * Walk (around walls) to the given tile, then run onArrive.
+     * If the tile cannot be reached the Farmer stays put and nothing happens.
+     */
+    public void goTo(int targetX, int targetY, Runnable onArrive) {
+        if (mapLoader == null) {
             return;
         }
-        enqueueOrRunAction(() -> startDrinkWater(water, mapLoader));
-    }
-
-    public void eatFood(Seed seed, MapLoader mapLoader) {
-        if (seed == null || seed.getLevel() < 3 || mapLoader == null) {
+        List<int[]> path = mapLoader.findPath(x, y, targetX, targetY);
+        if (path == null) {
             return;
         }
-        enqueueOrRunAction(() -> startEatFood(seed, mapLoader));
-    }
-
-    public void waterSeeds() {
-        // Implement seed watering logic when ready
-    }
-
-    public void feedChickens(Chicken chicken, MapLoader mapLoader) {
-        if (chicken == null || chicken.getLevel() < 1 || mapLoader == null) {
-            return;
+        pathQueue.clear();
+        pathQueue.addAll(path);
+        this.onArrival = onArrive;
+        if (pathQueue.isEmpty()) {
+            fireArrival(); // already standing on the tile
         }
-        enqueueOrRunAction(() -> startFeedChickens(chicken, mapLoader));
     }
 
-    public void expandShelter(Shelter shelter, MapLoader mapLoader) {
-        if (shelter == null || shelter.getLevel() < 1 || mapLoader == null) {
-            return;
-        }
-        enqueueOrRunAction(() -> startExpandShelter(shelter, mapLoader));
-    }
-
+    /** Moves one tile along the current path. Called by the game timer. */
     public void stepOnce() {
         int[] next = pathQueue.poll();
         if (next == null) {
-            runNextPendingActionIfIdle();
             return;
         }
         this.x = next[0];
         this.y = next[1];
-
         if (pathQueue.isEmpty()) {
-            if (onArrivalCallback != null) {
-                Runnable callback = onArrivalCallback;
-                onArrivalCallback = null;
-                callback.run();
-            }
-            runNextPendingActionIfIdle();
+            fireArrival();
         }
     }
 
-    private void startDrinkWater(Water water, MapLoader mapLoader) {
-        if (water == null || water.getLevel() < 1 || mapLoader == null) {
-            return;
-        }
-        List<int[]> waterSpawns = mapLoader.getWaterSpawn();
-        if (waterSpawns == null || waterSpawns.isEmpty()) {
-            return;
-        }
-
-        int[] target = waterSpawns.get(0);
-        int[] home = getHomeSpawn(mapLoader);
-
-        queueRoundTrip(target[0], target[1], home[0], home[1], () ->
-                this.level = Math.min(MAX_LEVEL, this.level + 1)
-        );
-    }
-
-    private void startEatFood(Seed seed, MapLoader mapLoader) {
-        if (seed == null || seed.getLevel() < 3 || mapLoader == null) {
-            return;
-        }
-        List<int[]> seedSpawns = mapLoader.getSeedSpawn();
-        if (seedSpawns == null || seedSpawns.isEmpty()) {
-            return;
-        }
-
-        int[] target = seedSpawns.get(0);
-        int[] home = getHomeSpawn(mapLoader);
-
-        queueRoundTrip(target[0], target[1], home[0], home[1], () ->
-                queueRoundTrip(target[0], target[1], home[0], home[1], () -> {
-                    this.level = Math.min(MAX_LEVEL, this.level + 1);
-                    seed.level = Math.min(MAX_LEVEL, seed.level + 1);
-                })
-        );
-    }
-
-    private void startFeedChickens(Chicken chicken, MapLoader mapLoader) {
-        if (chicken == null || chicken.getLevel() < 1 || mapLoader == null) {
-            return;
-        }
-        List<int[]> chickenSpawns = mapLoader.getChickenSpawn();
-        if (chickenSpawns == null || chickenSpawns.isEmpty()) {
-            return;
-        }
-
-        int[] target = chickenSpawns.get(0);
-        int[] home = getHomeSpawn(mapLoader);
-
-        queueRoundTrip(target[0], target[1], home[0], home[1], () -> {
-            this.level = Math.min(MAX_LEVEL, this.level + 1);
-            chicken.level = Math.min(MAX_LEVEL, chicken.level + 1);
-        });
-    }
-
-    private void startExpandShelter(Shelter shelter, MapLoader mapLoader) {
-        if (shelter == null || shelter.getLevel() < 1 || mapLoader == null) {
-            return;
-        }
-        List<int[]> shelterSpawns = mapLoader.getShelterSpawn();
-        if (shelterSpawns == null || shelterSpawns.isEmpty()) {
-            return;
-        }
-
-        int[] target = shelterSpawns.get(0);
-        int[] home = getHomeSpawn(mapLoader);
-
-        queueRoundTrip(target[0], target[1], home[0], home[1], () -> {
-            this.level = Math.min(MAX_LEVEL, this.level + 1);
-            shelter.level = Math.min(MAX_LEVEL, shelter.level + 1);
-        });
-    }
-
-    private void enqueueOrRunAction(Runnable action) {
-        if (isMoving()) {
-            pendingActions.add(action);
-        } else {
-            action.run();
-        }
-    }
-
-    private void runNextPendingActionIfIdle() {
-        while (!isMoving() && !pendingActions.isEmpty()) {
-            Runnable nextAction = pendingActions.poll();
-            if (nextAction != null) {
-                nextAction.run();
-            }
-        }
-    }
-
-    private int[] getHomeSpawn(MapLoader mapLoader) {
-        List<int[]> spawns = mapLoader.getFarmerSpawn();
-        if (spawns != null && !spawns.isEmpty()) {
-            return spawns.get(0);
-        }
-        return new int[]{this.x, this.y};
-    }
-
-    private void queueRoundTrip(int targetX, int targetY, int homeX, int homeY, Runnable onArrival) {
-        pathQueue.clear();
-        this.onArrivalCallback = onArrival;
-        enqueueManhattanPath(this.x, this.y, targetX, targetY);
-        enqueueManhattanPath(targetX, targetY, homeX, homeY);
-    }
-
-    private void enqueueManhattanPath(int fromX, int fromY, int toX, int toY) {
-        int curX = fromX;
-        int curY = fromY;
-
-        while (curX != toX) {
-            curX += Integer.compare(toX, curX);
-            pathQueue.add(new int[]{curX, curY});
-        }
-        while (curY != toY) {
-            curY += Integer.compare(toY, curY);
-            pathQueue.add(new int[]{curX, curY});
+    private void fireArrival() {
+        Runnable callback = onArrival;
+        onArrival = null; // cleared first so the callback can start a new trip
+        if (callback != null) {
+            callback.run();
         }
     }
 }
