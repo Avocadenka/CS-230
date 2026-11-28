@@ -10,8 +10,6 @@ package group19.project_cs230;
  */
 public class Shelter extends MainEntity {
 
-    /** Indicates whether the shelter has been built.*/
-    private boolean built;
 
     /** Creates a new Shelter object */
     private int x;
@@ -38,7 +36,4 @@ public class Shelter extends MainEntity {
      *
      * @return true if the shelter has been built, otherwise false
      */
-    public boolean isBuilt() {
-        return built;
-    }
 }

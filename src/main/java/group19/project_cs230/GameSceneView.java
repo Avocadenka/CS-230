@@ -31,6 +31,8 @@ public class GameSceneView {
     private boolean showChickens = false;
     private boolean showFarmer = false;
 
+    private boolean levelTransitionTriggered = false;
+
     // Backing entity objects (initial level = 0 from MainEntity constructor)
     private Farmer farmer;
     private MainEntity chickenEntity;
@@ -135,6 +137,8 @@ public class GameSceneView {
         showChickens = false;
         showFarmer = false;
 
+        levelTransitionTriggered = false;
+
         farmer = new Farmer(mapLoader);
         chickenEntity = new Chicken(mapLoader);
         shelterEntity = new Shelter(mapLoader);
@@ -169,6 +173,7 @@ public class GameSceneView {
                 if (moved) {
                     refreshAllLevelLabels();
                     redraw(gc);
+                    checkNextLevelProgression(gc);
                 }
             }
         };
@@ -197,9 +202,31 @@ public class GameSceneView {
             button.setDisable(true);
             refreshAllLevelLabels();
             redraw(gc);
+            checkNextLevelProgression(gc);
         });
         return button;
     }
+
+    private boolean allEntitiesAtMaxLevel() {
+        return farmer != null && farmer.getLevel() >= MAX_LEVEL
+                && chickenEntity != null && chickenEntity.getLevel() >= MAX_LEVEL
+                && shelterEntity != null && shelterEntity.getLevel() >= MAX_LEVEL
+                && seedsEntity != null && seedsEntity.getLevel() >= MAX_LEVEL
+                && waterEntity != null && waterEntity.getLevel() >= MAX_LEVEL;
+    }
+
+    private void checkNextLevelProgression(GraphicsContext gc) {
+        if (levelTransitionTriggered || !allEntitiesAtMaxLevel()) {
+            return;
+        }
+        levelTransitionTriggered = true;
+        stopMovementTimer();
+        redraw(gc);
+        advanceToNextGameLevel();
+    }
+
+    private void advanceToNextGameLevel() {
+        }
 
     private void onWaterSpawned() {
         Water water = (waterEntity instanceof Water) ? (Water) waterEntity : null;
@@ -314,8 +341,7 @@ public class GameSceneView {
         for (int y = 0; y < mapLoader.getHeight(); y++) {
             char[] row = grid.get(y);
             for (int x = 0; x < row.length; x++) {
-                char baseChar = (row[x] == 'X') ? 'X' : '-';
-                Image baseImg = spriteCache.getSprite(theme, baseChar);
+                Image baseImg = spriteCache.getSprite(theme, '-');
                 if (baseImg != null) {
                     gc.drawImage(baseImg, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                 }
@@ -361,19 +387,7 @@ public class GameSceneView {
     }
 
     private Image resolveEntitySprite(LevelTheme theme, char baseKey, int level) {
-        if (baseKey == 'W' && level >= 3) {
-            Image upgradedWater = spriteCache.getSprite(theme, 'W'); // Replace with level-3 water key if distinct
-            if (upgradedWater != null) {
-                return upgradedWater;
-            }
-        }
-        if (baseKey == 'S' && level >= 3) {
-            Image upgradedFlower = spriteCache.getSprite(theme, 'F'); // Replace with level-3 flower key if distinct
-            if (upgradedFlower != null) {
-                return upgradedFlower;
-            }
-        }
-        return spriteCache.getSprite(theme, baseKey);
+        return spriteCache.getSprite(theme, baseKey, level);
     }
 
     private void drawIfVisible(
